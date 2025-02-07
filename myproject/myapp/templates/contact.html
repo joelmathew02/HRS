@@ -1,0 +1,106 @@
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contact Us</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <link rel="icon" type="png" href="{% static 'images/pen1.png'%}">
+</head>
+<body style="background-color: #ACE1AF; background: url('{% static 'images/pic6.jpg' %}')">
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="{% url 'home' %}" style="font-weight:bold">
+            <img src="{% static 'images/pen1.png' %}" alt="Logo" class="navbar-logo me-2">
+            Handwriting Recognition System
+        </a>
+        <div class="collapse navbar-collapse justify-content-end">
+            <ul class="navbar-nav">
+                <li class="nav-item"><a class="btn" href="{% url 'home' %}">Home</a></li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item"><a class="btn" style="color: black;" href="{% url 'upload' %}">Upload Page</a></li>
+                    <li class="nav-item"><a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a></li>
+                {% else %}
+                    <li class="nav-item"><a class="btn" style="color: black;" href="{% url 'login' %}">Login</a></li>
+                    <li class="nav-item"><a class="btn" style="color: black;" href="{% url 'signup' %}">Sign Up</a></li>
+                {% endif %}
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Contact Form -->
+<div class="container mt-5 pt-5">
+    <h2 class="text-center mb-4" style="color:white; font-weight:bold">Contact Us</h2>
+    <div class="card shadow p-4">
+        <form method="POST" action="{% url 'contact' %}">
+            {% csrf_token %}
+            <div class="mb-3">
+                <label for="reason" class="form-label">Reason for Contacting</label>
+                <textarea class="form-control" id="reason" name="reason" rows="3" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label for="email" class="form-label">Email</label>
+                <input type="email" class="form-control" id="email" name="email" value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" required>
+            </div>
+            <div class="mb-3">
+                <label for="contact" class="form-label">Contact Number</label>
+                <input type="text" class="form-control" id="contact" name="contact" required>
+            </div>
+            <center><button type="submit" class="btn" style="background-color: black; color: white;">Submit</button></center>
+        </form>
+    </div>
+</div>
+
+
+<!-- Footer Section -->
+<footer class="footer mt-5 py-4 text-center">
+    <div class="container">
+        <!-- Small Logo -->
+        <div class="footer-logo mb-3">
+            <img src="{% static 'images/pen1.png' %}" alt="Footer Logo">
+        </div>
+
+        <h5 class="mb-2" style="font-size: 1.5rem; font-weight:bold">Contact Information</h5>
+        <p>
+            <strong>Handwriting Recognition System</strong> <br>
+            Freston Analytics, Cyber Park, <br>
+            Kozhikode, Kerala, India <br>
+            Email: support@hrs.com | Phone: +1 234 567 890
+        </p>
+
+        <!-- Social Media Links -->
+        <div class="social-icons mt-3">
+            <a href="https://www.facebook.com/" target="_blank">
+                <img src="{% static 'images/face.png' %}" style=" height: auto;width: 50px; max-width: 2000px;object-fit: contain; " alt="Facebook">
+            </a>
+            <a href="https://twitter.com/" target="_blank">
+                <img src="{% static 'images/x.jpg' %}" style=" height: auto;width: 50px; max-width: 2000px;object-fit: contain; " alt="Twitter">
+            </a>
+            <a href="https://www.instagram.com/" target="_blank">
+                <img src="{% static 'images/insta.jpg' %}"  style=" height: auto;width: 50px; max-width: 2000px;object-fit: contain; " alt="Instagram">
+            </a>
+        </div>
+
+        <!-- Google Maps Embed for Kozhikode Cyberpark -->
+<div class="map-container mt-4">
+    <iframe
+        src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3921.7022715126326!2d75.82180017405405!3d11.24565368871695!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3ba65c214c98e8bb%3A0x4e741f2a3e7e6f2a!2sCyberpark%2C%20Kozhikode%2C%20Kerala%20673016%2C%20India!5e0!3m2!1sen!2sus!4v1707291105678!5m2!1sen!2sus"
+        width="100%" height="250"
+        style="border:0;" allowfullscreen="" loading="lazy">
+    </iframe>
+</div>
+
+
+
+        <hr class="footer-line">
+        <p class="mb-0">&copy; 2025 Handwriting Recognition System. All Rights Reserved.</p>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
