@@ -27,6 +27,7 @@
     <a class="btn" style="color: black;" href="{% url 'contact' %}">Contact Us</a>
 </li>
                 {% if user.is_authenticated %}
+                <li class="nav-item"><a class="btn"  style="background-color:#ACE1AF; color: black;" href="{% url 'upload' %}">Upload Page</a></li>
                     <li class="nav-item">
                         <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
                     </li>
