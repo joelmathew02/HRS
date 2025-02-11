@@ -11,6 +11,19 @@ from django.core.files.storage import default_storage
 import os
 from django.contrib import messages
 from django.core.mail import send_mail
+from django.shortcuts import render
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+
+# Restrict access to superusers only
+def is_admin(user):
+    return user.is_superuser
+
+@user_passes_test(is_admin, login_url='login')  # Redirect non-admins to login
+def admin_dashboard(request):
+    users = User.objects.all()
+    return render(request, 'admin_dashboard.html', {'users': users})
+
 
 def contact_view(request):
     if request.method == 'POST':
@@ -96,3 +109,39 @@ def delete_image(request):
         return redirect("upload")  # Redirect to the upload page
 
     return redirect("upload")
+from django.shortcuts import render, redirect, get_object_or_404
+from django.contrib.auth.decorators import user_passes_test
+from django.contrib.auth.models import User
+from django.contrib import messages
+
+
+# Restrict access to superusers only
+def is_admin(user):
+    return user.is_superuser
+
+@user_passes_test(is_admin, login_url='login')
+def admin_dashboard(request):
+    users = User.objects.all()
+    return render(request, 'admin_dashboard.html', {'users': users})
+
+
+@user_passes_test(is_admin, login_url='login')
+def toggle_user_status(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    if user.is_active:
+        user.is_active = False
+        messages.success(request, f"{user.username} has been suspended.")
+    else:
+        user.is_active = True
+        messages.success(request, f"{user.username} has been activated.")
+    user.save()
+    return redirect('admin_dashboard')
+
+@user_passes_test(is_admin, login_url='login')
+def delete_user(request, user_id):
+    user = get_object_or_404(User, id=user_id)
+    user.delete()
+    messages.success(request, f"User {user.username} has been deleted.")
+    return redirect('admin_dashboard')
+
+

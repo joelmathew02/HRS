@@ -28,6 +28,12 @@
 </li>
                 {% if user.is_authenticated %}
                 <li class="nav-item"><a class="btn"  style="background-color:#ACE1AF; color: black;" href="{% url 'upload' %}">Upload Page</a></li>
+                 <!-- Show Admin Dashboard button only for superusers -->
+                    {% if user.is_superuser %}
+                        <li class="nav-item">
+                            <a class="btn" href="{% url 'admin_dashboard' %}">Admin Dashboard</a>
+                        </li>
+                    {% endif %}
                     <li class="nav-item">
                         <a class="btn btn-outline-danger" href="{% url 'logout' %}">Logout</a>
                     </li>
