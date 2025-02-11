@@ -22,7 +22,7 @@
         <div class="collapse navbar-collapse justify-content-end">
             <ul class="navbar-nav">
                 <li class="nav-item">
-                    <a class="btn" style="background-color:#ACE1AF; color: black;" href="{% url 'home' %}">Home</a>
+                    <a class="btn" style="background-color:#4A5D23; color: white;" href="{% url 'home' %}">Home</a>
                 </li>
                 <li class="nav-item">
     <a class="btn" style="color: black;" href="{% url 'contact' %}">Contact Us</a>
@@ -74,9 +74,41 @@
         </div>
     </div>
 </div>
-
+<!-- Objectives Section -->
+<div class="container my-5">
+    <h2 class="text-center fw-bold mb-4" style="font-size: 2rem; font-weight:bold;color: #4A5D23;">HRS Objectives</h2>
+    <div class="row text-center">
+        <div class="col-md-4">
+            <div class="card p-4 shadow-lg">
+                <img src="{% static 'images/ai.jpg' %}" alt="Objective 1" class="card-img-top mx-auto d-block" style="width: 80px;">
+                <div class="card-body">
+                    <h5 class="card-title" style=" font-weight:bold;color: #4A5D23;">Advanced AI and ML Techniques</h5>
+                    <p class="card-text">Utilize computer vision, NLP, CNNs, RNNs, and OCR for accurate handwriting recognition.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 shadow-lg">
+                <img src="{% static 'images/ui.jpg' %}" alt="Objective 2" class="card-img-top mx-auto d-block" style="width: 80px;">
+                <div class="card-body">
+                    <h5 class="card-title" style=" font-weight:bold;color: #4A5D23;">Improve Accessibility & Usability</h5>
+                    <p class="card-text">Provide an intuitive interface for users to visualize and validate digitized content.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-4 shadow-lg">
+                <img src="{% static 'images/imp.jpg' %}" alt="Objective 3" class="card-img-top mx-auto d-block" style="width: 80px;">
+                <div class="card-body">
+                    <h5 class="card-title" style=" font-weight:bold;color: #4A5D23;">Support Multiple Applications</h5>
+                    <p class="card-text"> Enable applications in education, healthcare and administration.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 <!-- Footer Section -->
-<footer id="about-section" class="footer mt-5 py-4 text-center">
+<footer id="about-section" class="footer mt-5 py-4 text-center" style="background-color: #4A5D23; color: white">
     <div class="container">
         <h5 class="mb-2" style="font-size: 2rem; font-weight:bold">About</h5>
         <p class="footer-text">

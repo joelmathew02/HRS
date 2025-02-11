@@ -27,7 +27,7 @@
     <a class="btn" style="color: black;" href="{% url 'contact' %}">Contact Us</a>
 </li>
                 {% if user.is_authenticated %}
-                <li class="nav-item"><a class="btn"  style="background-color:#ACE1AF; color: black;" href="{% url 'upload' %}">Upload Page</a></li>
+                <li class="nav-item"><a class="btn"  style="background-color:#4A5D23; color: white;" href="{% url 'upload' %}">Upload Page</a></li>
                  <!-- Show Admin Dashboard button only for superusers -->
                     {% if user.is_superuser %}
                         <li class="nav-item">
@@ -62,7 +62,7 @@
     <!-- Show uploaded image with delete icon -->
     {% if image_url %}
     <div class="mt-4 text-center">
-        <h4>Uploaded Image:</h4>
+        <h4 style="color:white; font-weight:bold">Uploaded Image:</h4>
         <div style="position: relative; display: inline-block;">
             <img src="{{ image_url }}" class="uploaded-image mb-3">
 
