@@ -72,7 +72,7 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('upload')  # Redirect to the upload page after login
+            return redirect('home')  # Redirect to the upload page after login
         else:
             messages.error(request, "Invalid username or password")
 
