@@ -1,17 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib.auth import login, authenticate, logout
 from .forms import SignupForm, LoginForm
-from django.contrib.auth import authenticate, login
-from django.contrib import messages
-from django.contrib.auth.models import User
-from django.contrib.auth import login
-from django.shortcuts import render
 from django.core.files.storage import FileSystemStorage
 from django.core.files.storage import default_storage
 import os
 from django.contrib import messages
 from django.core.mail import send_mail
-from django.shortcuts import render
 from django.contrib.auth.decorators import user_passes_test
 from django.contrib.auth.models import User
 
@@ -47,19 +41,26 @@ def contact_view(request):
     return render(request, 'contact.html')
 
 
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from django.contrib.auth import authenticate, login
+from django.contrib import messages
+
 def signup_view(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
         email = request.POST['email']
 
+        # Check if the username already exists
         if User.objects.filter(username=username).exists():
             messages.error(request, "Username already exists.")
             return redirect('signup')
 
+        # Create a new user
         user = User.objects.create_user(username=username, email=email, password=password)
         login(request, user)  # Automatically log in the user after signing up
-        return redirect('upload')  # Redirect to upload page after signup
+        return redirect('home')  # Redirect to upload page after signup
 
     return render(request, 'signup.html')
 
@@ -72,11 +73,12 @@ def login_view(request):
 
         if user is not None:
             login(request, user)
-            return redirect('home')  # Redirect to the upload page after login
+            return redirect('home')  # Redirect to home page after login
         else:
             messages.error(request, "Invalid username or password")
 
     return render(request, 'login.html')
+
 
 
 def upload_image(request):
