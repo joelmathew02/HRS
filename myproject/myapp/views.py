@@ -147,3 +147,102 @@ def delete_user(request, user_id):
     return redirect('admin_dashboard')
 
 
+from django.shortcuts import render
+from django.core.files.storage import default_storage
+from django.core.files.base import ContentFile
+from django.conf import settings
+from django.http import FileResponse
+import os
+import cv2
+import numpy as np
+from PIL import Image
+import torch
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+from docx import Document
+
+# Load the TrOCR model & processor
+processor = TrOCRProcessor.from_pretrained("microsoft/trocr-base-handwritten")
+model = VisionEncoderDecoderModel.from_pretrained("microsoft/trocr-base-handwritten")
+
+
+def preprocess_image(image_path):
+    """ Preprocess the uploaded image: resize, grayscale, normalize """
+    img = cv2.imread(image_path, cv2.IMREAD_GRAYSCALE)  # Convert to grayscale
+    img = cv2.resize(img, (640, 480))  # Resize to fit model input
+    img = cv2.GaussianBlur(img, (5, 5), 0)  # Reduce noise
+    img = cv2.adaptiveThreshold(img, 255, cv2.ADAPTIVE_THRESH_GAUSSIAN_C, cv2.THRESH_BINARY, 11, 2)
+
+    # Save the processed image
+    processed_image_path = os.path.join(settings.MEDIA_ROOT, "processed_images", os.path.basename(image_path))
+    cv2.imwrite(processed_image_path, img)
+    return processed_image_path
+
+
+def extract_text_from_image(image_path):
+    """ Extract handwritten text using TrOCR """
+    image = Image.open(image_path).convert("RGB")  # Open as RGB
+    pixel_values = processor(images=image, return_tensors="pt").pixel_values
+
+    with torch.no_grad():  # Disable gradient calculations (faster inference)
+        generated_ids = model.generate(pixel_values)
+        extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+    return extracted_text
+
+
+def save_text_to_word(text):
+    """ Save extracted text to a Word file """
+    word_file_path = os.path.join(settings.MEDIA_ROOT, "output", "recognized_text.docx")
+
+    doc = Document()
+    doc.add_heading("Recognized Handwritten Text", level=1)
+    doc.add_paragraph(text)
+    doc.save(word_file_path)
+
+    return word_file_path
+
+
+def upload_image(request):
+    """ Handles image upload, preprocessing, OCR, and saving text """
+    if request.method == "POST" and request.FILES.get("image"):
+        image_file = request.FILES["image"]
+
+        # Save original image
+        image_path = os.path.join(settings.MEDIA_ROOT, "uploads", image_file.name)
+        default_storage.save(image_path, ContentFile(image_file.read()))
+
+        # Preprocess image
+        preprocessed_image_path = preprocess_image(image_path)
+
+        # Extract text using TrOCR
+        extracted_text = extract_text_from_image(preprocessed_image_path)
+
+        # Save extracted text to Word
+        word_file_path = save_text_to_word(extracted_text)
+
+        # Generate URLs to send to template
+        image_url = os.path.join(settings.MEDIA_URL, "uploads", image_file.name)
+        preprocessed_image_url = os.path.join(settings.MEDIA_URL, "processed_images", image_file.name)
+        word_download_url = os.path.join(settings.MEDIA_URL, "output", "recognized_text.docx")
+
+        return render(request, "upload.html", {
+            "image_url": image_url,
+            "preprocessed_image_url": preprocessed_image_url,
+            "extracted_text": extracted_text,
+            "word_download_url": word_download_url
+        })
+
+    return render(request, "upload.html")
+
+
+from django.http import FileResponse
+import os
+from django.conf import settings
+
+def download_word_file(request):
+    """Allows users to download the Word file containing the extracted text"""
+    file_path = os.path.join(settings.MEDIA_ROOT, "output", "recognized_text.docx")
+    if os.path.exists(file_path):
+        return FileResponse(open(file_path, "rb"), as_attachment=True, filename="recognized_text.docx")
+    return render(request, "upload.html", {"error": "File not found"})
+
