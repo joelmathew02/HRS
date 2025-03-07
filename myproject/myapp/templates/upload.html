@@ -52,7 +52,13 @@
         <img src="{{ image_url }}" alt="Uploaded Image" class="img-fluid" style="max-width: 500px;">
     </div>
 {% endif %}
+    {% if extracted_text %}
 
+    <div class="mt-4">
+        <h4 style="color:white;">Extracted Text:</h4>
+        <p class="text-light bg-dark p-3 rounded" style="max-width: 500px; margin: auto;">{{ extracted_text }}</p>
+    </div>
+{% endif %}
 
 </div>
 

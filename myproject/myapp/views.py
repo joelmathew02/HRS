@@ -88,16 +88,58 @@ def contact_view(request):
         return redirect('contact')
     return render(request, 'contact.html')
 
+
 from django.core.files.storage import FileSystemStorage
 from django.shortcuts import render
+import torch
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+from PIL import Image
+import torch
+from transformers import TrOCRProcessor, VisionEncoderDecoderModel
+from PIL import Image
+import os
+from django.conf import settings
+
+# Define the path to your fine-tuned model
+MODEL_DIR = os.path.join(settings.BASE_DIR, "trocr_finetuned_model")
+
+# Load the fine-tuned processor and model
+processor = TrOCRProcessor.from_pretrained(MODEL_DIR)
+model = VisionEncoderDecoderModel.from_pretrained(MODEL_DIR)
+
+def extract_text_from_image(image_path):
+    """Extract text from the given image using the fine-tuned TrOCR model."""
+    image = Image.open(image_path).convert("RGB")  # Ensure image is in RGB format
+
+    # Preprocess the image
+    pixel_values = processor(images=image, return_tensors="pt").pixel_values
+
+    # Perform OCR using the fine-tuned TrOCR model
+    with torch.no_grad():
+        generated_ids = model.generate(pixel_values)
+        extracted_text = processor.batch_decode(generated_ids, skip_special_tokens=True)[0]
+
+    return extracted_text
+
+
 
 def upload_image(request):
     if request.method == 'POST' and request.FILES.get('image'):
         image = request.FILES['image']
         fs = FileSystemStorage()
         filename = fs.save(f"uploads/{image.name}", image)  # Save inside 'uploads' folder
-        image_url = fs.url(filename)
-        return render(request, 'upload.html', {'image_url': image_url})
+        image_url = fs.url(filename)  # Get URL for display
+
+        # Extract text from the uploaded image
+        extracted_text = extract_text_from_image(fs.path(filename))
+
+        return render(request, 'upload.html', {
+            'image_url': image_url,
+            'extracted_text': extracted_text
+        })
 
     return render(request, 'upload.html')
+
+
+
 
